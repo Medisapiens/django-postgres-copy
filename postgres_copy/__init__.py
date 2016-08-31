@@ -133,16 +133,17 @@ class CopyMapping(object):
 
     def sql_value(self, v):
         if isinstance(v, six.string_types):
-            return "'{}'".format(v)
+            return u"'{}'".format(v.replace("'", "''"))
         return v
 
     def get_value_mapping_sql(self, header, mapping):
-        sql = '''\nCASE {cases} END'''
+        sql = u'\nCASE {cases} END'
         cases = (
-            "WHEN \"{header}\" = {src} THEN {dst}".
+            u"WHEN \"{header}\" = {src} THEN {dst}".
             format(header=header, src=self.sql_value(k), dst=self.sql_value(v))
             for k, v in six.iteritems(mapping)
         )
+
         return sql.format(cases='\n'.join(cases))
 
     def prep_drop(self):
